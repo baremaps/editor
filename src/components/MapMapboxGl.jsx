@@ -49,6 +49,7 @@ function buildInspectStyle(originalMapStyle, coloredLayers, highlightedLayer) {
     sources: sources,
     layers: [backgroundLayer].concat(coloredLayers)
   }
+
   return inspectStyle
 }
 
@@ -93,7 +94,7 @@ export default class MapMapboxGl extends React.Component {
     //the necessary operations ourselves!
     this.state.map.setStyle(
       this.props.replaceAccessTokens(props.mapStyle),
-      {diff: true}
+      {diff: !props.mapStyle.reload}
     )
   }
 
@@ -176,7 +177,7 @@ export default class MapMapboxGl extends React.Component {
       }),
       showMapPopup: true,
       showMapPopupOnHover: false,
-      showInspectMapPopupOnHover: true,
+      showInspectMapPopupOnHover: false,
       showInspectButton: false,
       blockHoverPopupOnClick: true,
       assignLayerColor: (layerId, alpha) => {
@@ -191,6 +192,7 @@ export default class MapMapboxGl extends React.Component {
         }
       }
     })
+
     map.addControl(inspect)
 
     map.on("style.load", () => {

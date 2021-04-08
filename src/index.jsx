@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 
 import './favicon.ico'
 import './styles/index.scss'
-import App from './components/App';
+import App from './components/Editor';
 
 ReactDOM.render(
   <IconContext.Provider value={{className: 'react-icons'}}>

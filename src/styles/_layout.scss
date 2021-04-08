@@ -19,7 +19,7 @@
     bottom: 0;
     height: calc(100% - #{$toolbar-height + $toolbar-offset});
     top: $toolbar-height + $toolbar-offset;
-    left: 0;
+    left: 0px;
     z-index: 3;
     width: 200px;
     background-color: $color-black;
