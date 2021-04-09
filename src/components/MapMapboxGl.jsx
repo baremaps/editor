@@ -83,12 +83,20 @@ export default class MapMapboxGl extends React.Component {
     }
   }
 
-  updateMapFromProps(props) {
+  updateMapFromProps(props, prevProps) {
     if(!IS_SUPPORTED) return;
 
     if(!this.state.map) return
     const metadata = props.mapStyle.metadata || {}
-    MapboxGl.accessToken = metadata['maputnik:mapbox_access_token'] || tokens.mapbox
+    MapboxGl.accessToken = metadata['maputnik:mapbox_access_token'] || tokens.mapbox  
+
+    // Recenter the map if the source specifies a center upon initialization
+    if (!prevProps.mapStyle.center && !prevProps.mapStyle.zoom && props.mapStyle.center && props.mapStyle.zoom) {
+      this.state.map.jumpTo({
+        center: props.mapStyle.center,
+        zoom: props.mapStyle.zoom
+      })
+    }
 
     //Mapbox GL now does diffing natively so we don't need to calculate
     //the necessary operations ourselves!
@@ -112,8 +120,8 @@ export default class MapMapboxGl extends React.Component {
     if(!IS_SUPPORTED) return;
 
     const map = this.state.map;
-
-    this.updateMapFromProps(this.props);
+    
+    this.updateMapFromProps(this.props, prevProps);
 
     if(this.state.inspect && this.props.inspectModeEnabled !== this.state.inspect._showInspectMap) {
       // HACK: Fix for <https://github.com/maputnik/editor/issues/576>, while we wait for a proper fix.
