@@ -13,15 +13,6 @@
   </parent>
 
   <build>
-    <resources>
-      <resource>
-        <directory>build/build</directory>
-        <excludes>
-          <exclude>bundle-stats.html</exclude>
-          <exclude>bundle-stats.json</exclude>
-        </excludes>
-      </resource>
-    </resources>
     <plugins>
       <plugin>
         <groupId>com.github.eirslett</groupId>
