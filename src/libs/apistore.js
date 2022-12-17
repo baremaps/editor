@@ -5,7 +5,6 @@ import ReconnectingWebSocket from 'reconnecting-websocket'
 export class ApiStyleStore {
 
   constructor(opts) {
-    this.onLocalStyleChange = opts.onLocalStyleChange || (() => {})
     const port = opts.port || '8000'
     const host = opts.host || 'localhost'
     this.localUrl = `http://${host}:${port}`
@@ -23,28 +22,11 @@ export class ApiStyleStore {
     .then((body) => {
       const styleIds = body;
       this.latestStyleId = styleIds[0]
-      this.notifyLocalChanges()
       cb(null)
     })
     .catch(function(e) {
       cb(new Error('Can not connect to style API'))
     })
-  }
-
-  notifyLocalChanges() {
-    const connection = new ReconnectingWebSocket(this.websocketUrl)
-    connection.onmessage = e => {
-      if(!e.data) return
-      console.log('Received style update from API')
-      let parsedStyle = style.emptyStyle
-      try {
-        parsedStyle = JSON.parse(e.data)
-      } catch(err) {
-        console.error(err)
-      }
-      const updatedStyle = style.ensureStyleValidity(parsedStyle)
-      this.onLocalStyleChange(updatedStyle)
-    }
   }
 
   latestStyle(cb) {
