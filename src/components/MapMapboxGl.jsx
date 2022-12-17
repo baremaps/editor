@@ -49,6 +49,7 @@ function buildInspectStyle(originalMapStyle, coloredLayers, highlightedLayer) {
     sources: sources,
     layers: [backgroundLayer].concat(coloredLayers)
   }
+
   return inspectStyle
 }
 
@@ -82,18 +83,30 @@ export default class MapMapboxGl extends React.Component {
     }
   }
 
-  updateMapFromProps(props) {
+  updateMapFromProps(props, prevProps) {
     if(!IS_SUPPORTED) return;
 
     if(!this.state.map) return
     const metadata = props.mapStyle.metadata || {}
     MapboxGl.accessToken = metadata['maputnik:mapbox_access_token'] || tokens.mapbox
 
+    // Recenter the map if the source specifies a center upon initialization
+    if (location.hash === "#0/0/0"
+      && !prevProps.mapStyle.center
+      && !prevProps.mapStyle.zoom
+      && props.mapStyle.center
+      && props.mapStyle.zoom) {
+      this.state.map.jumpTo({
+        center: props.mapStyle.center,
+        zoom: props.mapStyle.zoom
+      })
+    }
+
     //Mapbox GL now does diffing natively so we don't need to calculate
     //the necessary operations ourselves!
     this.state.map.setStyle(
       this.props.replaceAccessTokens(props.mapStyle),
-      {diff: true}
+      {diff: !props.mapStyle.reload}
     )
   }
 
@@ -112,7 +125,7 @@ export default class MapMapboxGl extends React.Component {
 
     const map = this.state.map;
 
-    this.updateMapFromProps(this.props);
+    this.updateMapFromProps(this.props, prevProps);
 
     if(this.state.inspect && this.props.inspectModeEnabled !== this.state.inspect._showInspectMap) {
       // HACK: Fix for <https://github.com/maputnik/editor/issues/576>, while we wait for a proper fix.
@@ -176,7 +189,7 @@ export default class MapMapboxGl extends React.Component {
       }),
       showMapPopup: true,
       showMapPopupOnHover: false,
-      showInspectMapPopupOnHover: true,
+      showInspectMapPopupOnHover: false,
       showInspectButton: false,
       blockHoverPopupOnClick: true,
       assignLayerColor: (layerId, alpha) => {
@@ -191,6 +204,7 @@ export default class MapMapboxGl extends React.Component {
         }
       }
     })
+
     map.addControl(inspect)
 
     map.on("style.load", () => {

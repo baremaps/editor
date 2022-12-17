@@ -33,3 +33,11 @@ public
 /errorShots
 /old
 /build
+/node
+/target
+
+# Ignore mac files
+.DS_Store
+
+# Ignore IntelliJ files
+*.iml
